@@ -1,8 +1,41 @@
 <?php 
-include("conn.php");?>
+include("conn.php");
+
+
+
+
+if (isset($_GET['pageno'])) {
+    $pageno = $_GET['pageno'];
+} else {
+    $pageno = 1;
+}
+
+
+$no_of_records_per_page = 8; // Set your desire Number here
+if($pageno)
+	$offset = ($pageno-1) * $no_of_records_per_page;
+else
+	$offset =0;
+$limit =  " LIMIT ".$offset.", ".$no_of_records_per_page." ;"; 
+
+
+
+$stmnt_count = "SELECT COUNT(*) FROM `book`";
+$data=mysqli_query($conn,$stmnt_count);
+$total_rows = mysqli_fetch_array($data)[0];
+$total_pages = ceil($total_rows / $no_of_records_per_page);
+
+
+
+
+
+
+?>
 
 <html>
 <head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
 <style>
 body{
   background: url("2.jpg");
@@ -125,7 +158,7 @@ ul li:hover ul li{
     <br><br>
           
           
-  <div class="boxtwo" style="border:solid 1px #CF0403;border-radius: 10px; width:84%; height:360px; margin-left:9%;margin-top:10px;background-color:white">
+  <div class="boxtwo" style="border:solid 1px #CF0403;border-radius: 10px; width:84%; height:400px; margin-left:9%;margin-top:10px;background-color:white">
       
 <!--    <input type="text" placeholder="search by book id"><button type="button">search</button>  -->
        <p style="text-align:center;color:yellow;font-weight:bold">ALL BOOKS</p>
@@ -151,7 +184,7 @@ ul li:hover ul li{
                     
             <?php 
            
-           $data=mysqli_query($conn,"SELECT * FROM `book`");
+           $data=mysqli_query($conn,"SELECT * FROM `book` ".$limit." ;");
 	              while($row = mysqli_fetch_array($data))
 	               {   
                         echo "<tr>";
@@ -172,12 +205,37 @@ ul li:hover ul li{
       
       </div>   
    
-
+<hr>
+		<center><b><p class="text-light">Page No.  <?php echo $pageno; ?> of <?php echo $total_pages; ?></p></b></center>
+		<br><br>
   </div>
       
       
       
-      
+      <div class="text-center">
+			
+	<?php
+	
+
+	
+	
+	echo ' <div  class="page-item" style="display:inline-block;" ><a class="page-link" href="?pageno=1">First page</a></div>';
+	
+	for($i=1;$i<=$total_pages;$i++)
+	{
+		if($pageno==$i)
+			echo'<div class="page-item active" style="display:inline-block;">
+        <a class="page-link"  href="?pageno='.$i.'">P '.$i.'</a></div>';
+		else
+			echo'<div class="page-item" style="display:inline-block;">
+        <a class="page-link"  href="?pageno='.$i.'">P '.$i.'</a></div>';
+	}
+	
+	?>
+    <div  class="page-item" style="display:inline-block;"><a class="page-link" href="?pageno=<?php echo $total_pages; ?>">Last page</a></div>
+				
+</div>
+	
  
 
 
